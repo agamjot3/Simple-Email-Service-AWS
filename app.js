@@ -4,30 +4,45 @@ const app = express();
 app.use(express.json());
 require("dotenv").config();
 
+const emailData = `
+<p>Hey there,</p>
+<br>
+<p>Thanks for your patience, finally we have new apps to be tested and reviewed on Qantily.com.</p>
+<br>
+<p>Just log in to your account and start testing.</p>
+<br>
+<p>Find bugs and review the apps and get rewarded. Alternatively, <a href="https://qantily.com/">click here</a>.</p>
+<br>
+<p>Best Regards</p>
+<p>Team Qantily</p>
+<p>8851408462</p>
+<img src="https://qantily.com/static/media/quantlyBanner.76638962.png" alt="Qantily" width="90px" />
+`;
+
 var AWS = require("aws-sdk");
 AWS.config.update({ region: "ap-south-1" });
 
 app.post("/ses", (req, res) => {
-  console.log("toEamil = " + req.body.toEamil);
+  console.log("toEmail = " + req.body.toEmail);
 
   var params = {
     Destination: {
       CcAddresses: ["agamjot3@gmail.com"],
-      ToAddresses: [req.body.toEamil],
+      ToAddresses: [req.body.toEmail],
     },
     Message: {
       Body: {
-        Text: {
+        Html: {
           Charset: "UTF-8",
-          Data: "TEXT_FORMAT_BODY",
+          Data: emailData,
         },
       },
       Subject: {
         Charset: "UTF-8",
-        Data: "Test email",
+        Data: "An update from Qantily",
       },
     },
-    Source: "agamjot@nexgsolution.com",
+    Source: "noreply@qantily.com",
   };
 
   const sendPromise = new AWS.SES({ apiVersion: "2010-12-01" })
